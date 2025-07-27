@@ -6768,7 +6768,11 @@ static int case_cmp(uint64_t a, uint64_t b)
         return (int64_t)a < (int64_t)b ? -1 : (int64_t)a > (int64_t)b;
 }
 
-static int case_cmp_qs(const void *pa, const void *pb)
+// static int case_cmp_qs(const void *pa, const void *pb)
+// {
+//     return case_cmp((*(struct case_t**)pa)->v1, (*(struct case_t**)pb)->v1);
+// }
+static int case_cmp_qs(const void *pa, const void *pb, void *arg)
 {
     return case_cmp((*(struct case_t**)pa)->v1, (*(struct case_t**)pb)->v1);
 }
@@ -6778,7 +6782,8 @@ static void case_sort(struct switch_t *sw)
     struct case_t **p;
     if (sw->n < 2)
         return;
-    qsort(sw->p, sw->n, sizeof *sw->p, case_cmp_qs);
+    // qsort(sw->p, sw->n, sizeof *sw->p, case_cmp_qs);
+    qsort_r(sw->p, sw->n, sizeof *sw->p, case_cmp_qs, NULL);
     p = sw->p;
     while (p < sw->p + sw->n - 1) {
         if (case_cmp(p[0]->v2, p[1]->v1) >= 0) {

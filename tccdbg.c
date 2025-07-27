@@ -917,8 +917,16 @@ struct eh_search_table {
     uint32_t fde_offset;
 };
 
-static int sort_eh_table(const void *a, const void *b)
+// static int sort_eh_table(const void *a, const void *b)
+// {
+//     uint32_t pc1 = ((const struct eh_search_table *)a)->pc_offset;
+//     uint32_t pc2 = ((const struct eh_search_table *)b)->pc_offset;
+
+//     return pc1 < pc2 ? -1 : pc1 > pc2 ? 1 : 0;
+// }
+static int sort_eh_table(const void *a, const void *b, void *arg)
 {
+    (void)arg;
     uint32_t pc1 = ((const struct eh_search_table *)a)->pc_offset;
     uint32_t pc2 = ((const struct eh_search_table *)b)->pc_offset;
 
@@ -1001,8 +1009,10 @@ next:
 	ln += length + 4;
     }
     add32le(eh_frame_hdr_section->data + count_offset, count);
-    qsort(eh_frame_hdr_section->data + tab_offset, count,
-	  sizeof(struct eh_search_table), sort_eh_table);
+    // qsort(eh_frame_hdr_section->data + tab_offset, count,
+	//   sizeof(struct eh_search_table), sort_eh_table);
+    qsort_r(eh_frame_hdr_section->data + tab_offset, count,
+	  sizeof(struct eh_search_table), sort_eh_table, NULL);
 }
 #endif
 
