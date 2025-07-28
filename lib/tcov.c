@@ -86,7 +86,26 @@ static unsigned long long get_value(unsigned char *p, int size)
     return value;
 }
 
-static int sort_func (const void *p, const void *q)
+// static int sort_func (const void *p, const void *q)
+// {
+//     const tcov_function *pp = (const tcov_function *) p;
+//     const tcov_function *pq = (const tcov_function *) q;
+
+//     return pp->first_line > pq->first_line ? 1 :
+// 	   pp->first_line < pq->first_line ? -1 : 0;
+// }
+
+// static int sort_line (const void *p, const void *q)
+// {
+//     const tcov_line *pp = (const tcov_line *) p;
+//     const tcov_line *pq = (const tcov_line *) q;
+
+//     return pp->fline > pq->fline ? 1 :
+// 	   pp->fline < pq->fline ? -1 :
+//            pp->count < pq->count ? 1 :
+// 	   pp->count > pq->count ? -1 : 0;
+// }
+static int sort_func (const void *p, const void *q, void *arg)
 {
     const tcov_function *pp = (const tcov_function *) p;
     const tcov_function *pq = (const tcov_function *) q;
@@ -95,7 +114,7 @@ static int sort_func (const void *p, const void *q)
 	   pp->first_line < pq->first_line ? -1 : 0;
 }
 
-static int sort_line (const void *p, const void *q)
+static int sort_line (const void *p, const void *q, void *arg)
 {
     const tcov_line *pp = (const tcov_line *) p;
     const tcov_line *pq = (const tcov_line *) q;
@@ -204,10 +223,12 @@ static tcov_file *sort_test_coverage (unsigned char *p)
     }
     nfile = file;
     while (nfile) {
-	qsort (nfile->func, nfile->n_func, sizeof (tcov_function), sort_func);
+	// qsort (nfile->func, nfile->n_func, sizeof (tcov_function), sort_func);
+	qsort_r(nfile->func, nfile->n_func, sizeof (tcov_function), sort_func, NULL);
 	for (i = 0; i < nfile->n_func; i++) {
 	    tcov_function *func = &nfile->func[i];
-	    qsort (func->line, func->n_line, sizeof (tcov_line), sort_line);
+	    // qsort (func->line, func->n_line, sizeof (tcov_line), sort_line);
+		qsort_r(func->line, func->n_line, sizeof (tcov_line), sort_line, NULL);
         }
 	nfile = nfile->next;
     }

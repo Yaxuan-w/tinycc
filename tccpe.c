@@ -966,7 +966,8 @@ static void pe_build_exports(struct pe_info *pe)
     if (0 == sym_count)
         return;
 
-    qsort (sorted, sym_count, sizeof *sorted, sym_cmp);
+    // qsort (sorted, sym_count, sizeof *sorted, sym_cmp);
+    qsort_r(sorted, sym_count, sizeof *sorted, sym_cmp, NULL);
 
     pe_align_section(pe->thunk, 16);
     dllname = tcc_basename(pe->filename);
